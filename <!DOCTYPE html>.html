@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Dylan Den - Streaming Service</title>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <style>
+        /* General Reset and Fonts */
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #0f0f0f;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        /* Header Section */
+        header {
+            background-color: #333;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            color: #fff;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        /* Movie Section */
+        .movie-section {
+            padding: 40px 20px;
+        }
+
+        .movie-category {
+            margin-bottom: 40px;
+        }
+
+        .movie-category h2 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #fff;
+            text-align: left;
+        }
+
+        .movie-row {
+            display: flex;
+            overflow-x: auto;
+            padding: 10px 0;
+            gap: 20px;
+        }
+
+        .movie {
+            position: relative;
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.6);
+        }
+
+        .movie img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .movie:hover {
+            transform: scale(1.05);
+        }
+
+        .coming-soon {
+            background-color: #444;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            border-radius: 5px;
+            font-size: 1.2em;
+            margin-top: 10px;
+        }
+
+        /* Modal Styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow: auto;
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #222;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            color: #fff;
+            border-radius: 10px;
+        }
+
+        .modal-header {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 2.5em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #fff;
+        }
+
+        /* Video Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            overflow: auto;
+            padding-top: 60px;
+        }
+
+        .video-modal-content {
+            background-color: #222;
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 800px;
+            color: #fff;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .video-modal .close {
+            color: #aaa;
+            float: right;
+            font-size: 2.5em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .video-modal .close:hover,
+        .video-modal .close:focus {
+            color: #fff;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #222;
+            padding: 20px;
+            text-align: center;
+            color: #bbb;
+        }
+
+        footer p {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>The Dylan Den</h1>
+</header>
+
+<!-- Movie Sections -->
+<main>
+    <div class="movie-section" id="movies">
+        <div class="movie-category">
+            <h2>Playing Now</h2>
+            <div class="movie-row" id="movieRow">
+                <div class="movie" id="shortcomings">
+                    <img src="Shortcomings/poster.jpeg" alt="Shortcomings">
+                    <div class="coming-soon">Playing Now</div>
+                </div>
+                <div class="movie" id="handlewithcare">
+                    <img src="Handlewithcare/HWC_Poster_v2.jpeg" alt="Handle With Care">
+                    <div class="coming-soon">Coming Soon</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Modal for Movie Info -->
+<div id="movieModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <div class="modal-header">
+            <h2 id="modalTitle"></h2>
+        </div>
+        <div class="modal-body">
+            <p id="modalDescription"></p>
+            <p><strong>Director:</strong> <span id="modalDirector"></span></p>
+            <p><strong>Rating:</strong> <span id="modalRating"></span></p>
+            <p><strong>Main Leads:</strong> <span id="modalLeads"></span></p>
+        </div>
+    </div>
+</div>
+
+<!-- Video Player Modal -->
+<div id="videoModal" class="video-modal">
+    <div class="video-modal-content">
+        <span class="close" id="closeVideoModal">&times;</span>
+        <video id="videoPlayer" width="100%" controls>
+            <source id="videoSource" src="" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2025 The Dylan Den. All Rights Reserved.</p>
+</footer>
+
+<script>
+    // Movie Details for Modal
+    const movieDetails = {
+        "shortcomings": {
+            title: "Shortcomings",
+            description: "Shortcomings is a romantic comedy following the life of Ben Tanaka, a 20-something living in the Bay Area. As he navigates the ups and downs of life and relationships, he finds himself torn between romantic interests and personal growth.",
+            director: "Randall Park",
+            rating: "R",
+            leads: "Justin H. Min, Ally Maki, Sherry Cola",
+            videoUrl: "/Users/dylanmiller/Downloads/Apps/Streamingsite/Shortcomings/Shortcomings.(NKIRI.COM).2023.AMZN.WEBRip.DOWNLOADED.FROM.NKIRI.COM.mp4"
+        },
+        "handlewithcare": {
+            title: "Handle With Care",
+            description: "In the wake of a short-lived marriage, a young man sells his unused wedding gifts online and learns valuable life lessons from the people he meets along the way.",
+            director: "Matthew James Thompson",
+            rating: "PG-13",
+            leads: "Justin H. Min, Nicole Brydon Bloom, Peter Jacobson",
+            videoUrl: "" // No video for Handle with Care
+        }
+    };
+
+    // Open Modal for Movie Info
+    document.querySelectorAll('.movie').forEach(movie => {
+        movie.addEventListener('click', function() {
+            openModal(movie.id);
+        });
+    });
+
+    function openModal(movieId) {
+        const movieInfo = movieDetails[movieId];
+        document.getElementById("modalTitle").innerText = movieInfo.title;
+        document.getElementById("modalDescription").innerText = movieInfo.description;
+        document.getElementById("modalDirector").innerText = movieInfo.director;
+        document.getElementById("modalRating").innerText = movieInfo.rating;
+        document.getElementById("modalLeads").innerText = movieInfo.leads;
+        document.getElementById("movieModal").style.display = "block";
+
+        // Close the info modal and play video for "Shortcomings" only
+        if (movieId === "shortcomings") {
+            document.getElementById('closeModal').onclick = () => {
+                closeModal();
+                showVideo(movieInfo.videoUrl);
+            };
+        } else if (movieId === "handlewithcare") {
+            document.getElementById('closeModal').onclick = closeModal;
+        }
+    }
+
+    // Show video if not "Handle with Care"
+    function showVideo(videoUrl) {
+        const videoSource = document.getElementById("videoSource");
+        videoSource.src = videoUrl;
+        document.getElementById('videoModal').style.display = 'block';
+        document.getElementById('videoPlayer').load(); // Ensure the video loads
+        document.getElementById('videoPlayer').play(); // Auto-play the video
+    }
+
+    // Close Movie Info Modal
+    function closeModal() {
+        document.getElementById("movieModal").style.display = "none";
+    }
+
+    // Close Video Player Modal
+    document.getElementById('closeVideoModal').addEventListener('click', function() {
+        const videoModal = document.getElementById('videoModal');
+        document.getElementById('videoPlayer').pause(); // Pause the video when modal is closed
+        videoModal.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>
